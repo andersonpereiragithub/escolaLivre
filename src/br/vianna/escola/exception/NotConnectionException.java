@@ -12,7 +12,7 @@ package br.vianna.escola.exception;
 public class NotConnectionException extends Exception {
 
     public NotConnectionException() {
-        super("Não foi possivel conectar no banco");
+        super(" Não foi possivel conectar no banco");
     }
     
 }

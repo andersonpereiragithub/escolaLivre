@@ -14,8 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,9 +26,14 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
 
         Connection c = ConnectionSingleton.getConnection();
 
-        String sql = "INSERT INTO pessoa (idade, nome) "
-                + "VALUE (?, ?)";
+       // String sql1 = "INSERT INTO pessoa (idade, nome) "
+         //       + "VALUE (?, ?)";
 
+        
+        String sql = "INSERT INTO pessoa (id_pessoa, idade, nome)"
+                + "VALUES(?,?,?);";
+
+        
         PreparedStatement st = c.prepareStatement(sql);
 
         st.setInt(1, p.getIdade());
@@ -42,9 +45,11 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
         rs.next();
         int idProf = rs.getInt(1); //Estas 3 linhas pega o id que acabou de ser inserido no banco        
 
-        String sqlProf = "INSERT INTO professor"
-                + "(id, valor_hora_aula, login, senha) "
-                + "VALUE(?, ?, ?, ?);";
+        //String sqlProf = "INSERT INTO professor"
+         //       + "(id, valor_hora_aula, login, senha) "
+           //     + "VALUE(?, ?, ?, ?);";
+        String sqlProf = "INSERT INTO professor (id_prof, valor_hora_aula, login, senha)"
+                + "VALUES(?,?,?,?)";
 
         st = c.prepareStatement(sqlProf);
 
@@ -60,12 +65,12 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
     public void alterar(Professor obj) throws NotConnectionException, SQLException {
         Connection c = ConnectionSingleton.getConnection();
 
-        String sql = "UPDATE pessoa "
+        String sql = "UPDATE escola_java.pessoa"
                 + "SET "
-                + "idade = ?, "
-                + "nome = ? "
-                + "WHERE id = ?";
-
+                + "idade = ?," 
+                + "nome` = ? "
+                + "WHERE (id = ?)";
+        
         PreparedStatement st = c.prepareStatement(sql);
 
         st.setInt(1, obj.getIdade());

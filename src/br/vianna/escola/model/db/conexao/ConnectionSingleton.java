@@ -9,9 +9,6 @@ import br.vianna.escola.exception.NotConnectionException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author ander
@@ -26,11 +23,9 @@ public class ConnectionSingleton {
     public static Connection getConnection() throws NotConnectionException {
         try {
             if (conexao == null || conexao.isClosed()) {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
 
-                conexao = DriverManager.getConnection("jdbc:mysql://localhost:3307/escola_java",
-                        "root",
-                        "123456");
+                conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/escola_java", "root", "x1a2n3d4a5");
             }
         } catch (SQLException | ClassNotFoundException ex) {
             throw new NotConnectionException();
