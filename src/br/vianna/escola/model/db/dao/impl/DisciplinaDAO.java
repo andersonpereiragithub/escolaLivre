@@ -5,15 +5,21 @@
  */
 package br.vianna.escola.model.db.dao.impl;
 
+import br.vianna.escola.exception.NotConnectionException;
 import br.vianna.escola.model.Disciplina;
+import br.vianna.escola.model.db.conexao.ConnectionSingleton;
 import br.vianna.escola.model.db.dao.IGenericsDAO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
  *
  * @author Delon
  */
-public class DisciplinaDAO implements IGenericsDAO<Disciplina, Integer>{
+public class DisciplinaDAO implements IGenericsDAO<Disciplina, Integer> {
 
     @Override
     public void inserir(Disciplina obj) {
@@ -45,7 +51,26 @@ public class DisciplinaDAO implements IGenericsDAO<Disciplina, Integer>{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-  
+    public ArrayList<Disciplina> getDisciplinasProfessor(Integer idProfessor) throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
 
-    
+        String sql = "SELECT * FROM disciplina d "
+                + "WHERE d.professor_fk = ?; ";
+
+        PreparedStatement st = c.prepareStatement(sql);
+        st.setInt(1, idProfessor);
+
+        ResultSet rs = st.executeQuery();
+
+        ArrayList<Disciplina> disciplinas = new ArrayList<>();
+
+        while (rs.next()) {
+            Disciplina d = new Disciplina(rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getInt("ano"),
+                    rs.getInt("semestre"),
+                    rs.getInt("carga_horaria"), null);
+        }
+        return disciplinas;
+    }
 }

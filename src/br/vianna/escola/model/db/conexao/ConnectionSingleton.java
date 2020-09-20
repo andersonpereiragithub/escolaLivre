@@ -23,8 +23,9 @@ public class ConnectionSingleton {
     public static Connection getConnection() throws NotConnectionException {
         try {
             if (conexao == null || conexao.isClosed()) {
-                Class.forName("com.mysql.cj.jdbc.Driver");
 
+                Class.forName("com.mysql.jdbc.Driver");
+                
                 conexao = DriverManager.getConnection("jdbc:mysql://localhost:3306/escola_java", "root", "x1a2n3d4a5");
             }
         } catch (SQLException | ClassNotFoundException ex) {

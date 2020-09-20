@@ -6,6 +6,7 @@
 package br.vianna.escola.model.db.dao.impl;
 
 import br.vianna.escola.exception.NotConnectionException;
+import br.vianna.escola.model.Disciplina;
 import br.vianna.escola.model.Professor;
 import br.vianna.escola.model.db.conexao.ConnectionSingleton;
 import br.vianna.escola.model.db.dao.IGenericsDAO;
@@ -26,14 +27,9 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
 
         Connection c = ConnectionSingleton.getConnection();
 
-       // String sql1 = "INSERT INTO pessoa (idade, nome) "
-         //       + "VALUE (?, ?)";
+        String sql = "INSERT INTO pessoa (idade, nome) "
+                + "VALUE (?, ?);";
 
-        
-        String sql = "INSERT INTO pessoa (id_pessoa, idade, nome)"
-                + "VALUES(?,?,?);";
-
-        
         PreparedStatement st = c.prepareStatement(sql);
 
         st.setInt(1, p.getIdade());
@@ -45,10 +41,7 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
         rs.next();
         int idProf = rs.getInt(1); //Estas 3 linhas pega o id que acabou de ser inserido no banco        
 
-        //String sqlProf = "INSERT INTO professor"
-         //       + "(id, valor_hora_aula, login, senha) "
-           //     + "VALUE(?, ?, ?, ?);";
-        String sqlProf = "INSERT INTO professor (id_prof, valor_hora_aula, login, senha)"
+        String sqlProf = "INSERT INTO professor (id_Professor, valor_hora_aula, login, senha)"
                 + "VALUES(?,?,?,?)";
 
         st = c.prepareStatement(sqlProf);
@@ -65,12 +58,12 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
     public void alterar(Professor obj) throws NotConnectionException, SQLException {
         Connection c = ConnectionSingleton.getConnection();
 
-        String sql = "UPDATE escola_java.pessoa"
+        String sql = "UPDATE pessoa "
                 + "SET "
-                + "idade = ?," 
-                + "nome` = ? "
-                + "WHERE (id = ?)";
-        
+                + "idade = ?, "
+                + "nome = ? "
+                + "WHERE id_Pessoa = ?";
+
         PreparedStatement st = c.prepareStatement(sql);
 
         st.setInt(1, obj.getIdade());
@@ -81,11 +74,10 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
 
         String sqlProf = "UPDATE professor "
                 + "SET "
-                + "valor_hora_aula = ? "
-                + "login = ? "
+                + "valor_hora_aula = ?, "
+                + "login = ?, "
                 + "senha = ? "
-                + "WHERE id = ?";
-        
+                + "WHERE id_Professor = ?;";
 
         st = c.prepareStatement(sqlProf);
 
@@ -98,23 +90,124 @@ public class ProfessorDAO implements IGenericsDAO<Professor, Integer> {
     }
 
     @Override
-    public void apagar(Professor obj) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void apagar(Professor obj) throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
+
+        String sqlProf = "DELETE FROM Professor "
+                + "WHERE id_professor = ?";
+
+        PreparedStatement st = c.prepareStatement(sqlProf);
+
+        st.setInt(1, obj.getId());
+
+        st.executeUpdate();
+
+        String sql = "DELETE FROM Pessoa "
+                + "WHERE id_Pessoa = ?;";
+
+        st = c.prepareStatement(sql);
+        st.setDouble(1, obj.getId());
+
+        st.executeUpdate();
     }
 
     @Override
-    public Professor buscarPeloId(Integer key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Professor buscarPeloId(Integer key) throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
+
+        String sql = "SELECT * FROM pessoa p\n"
+                + "INNER JOIN professor prof On(p.id_pessoa = prof.id_professor)"
+                + "WHERE p.id_pessoa = ?";
+
+        PreparedStatement st = c.prepareStatement(sql);
+
+        st.setInt(1, key);
+
+        ResultSet rs = st.executeQuery();
+
+        Professor p = null;
+        if (rs.next()) {
+            p = new Professor(rs.getInt("id_pessoa"),
+                    rs.getDouble("valor_hora_aula"),
+                    rs.getString("login"),
+                    rs.getString("senha"),
+                    rs.getString("nome"),
+                    rs.getInt("idade"));
+            return p;
+        } else {
+            return p;
+        }
+    }
+
+    public Professor buscarPeloLoginESenhaId(String login, String senha) throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
+
+        String sql = "SELECT * FROM pessoa p "
+                + "INNER JOIN professor prof On(p.id_pessoa = prof.id_professor)"
+                + "WHERE prof.login = ? and prof.senha = ?";
+
+        PreparedStatement st = c.prepareStatement(sql);
+
+        st.setString(1, login);
+        st.setString(2, senha);
+
+        ResultSet rs = st.executeQuery();
+
+        Professor p = null;
+        if (rs.next()) {
+            p = new Professor(rs.getInt("id_pessoa"),
+                    rs.getDouble("valor_hora_aula"),
+                    rs.getString("login"),
+                    rs.getString("senha"),
+                    rs.getString("nome"),
+                    rs.getInt("idade"));
+            return p;
+        } else {
+            return p;
+        }
+    }
+
+    public ArrayList<Disciplina> getDisciplina(Integer idProfessor) throws NotConnectionException, SQLException {
+        return new DisciplinaDAO().getDisciplinasProfessor(idProfessor);
     }
 
     @Override
-    public ArrayList<Professor> buscarTodos() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<Professor> buscarTodos() throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
+
+        String sql = "SELECT * FROM Pessoa p\n"
+                + "INNER JOIN Professor prof On (p.id_pessoa = prof.id_professor) ";
+
+        PreparedStatement st = c.prepareStatement(sql);
+
+        ResultSet rs = st.executeQuery();
+
+        ArrayList<Professor> lista = new ArrayList<>();
+        while (rs.next()) {
+            Professor p = new Professor(rs.getInt("id_Professor"),
+                    rs.getDouble("valor_hora_aula"),
+                    rs.getString("login"),
+                    rs.getString("senha"),
+                    rs.getString("nome"),
+                    rs.getInt("idade"));
+
+            lista.add(p);
+        }
+        return lista;
     }
 
     @Override
-    public int quantidade() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public int quantidade() throws NotConnectionException, SQLException {
+        Connection c = ConnectionSingleton.getConnection();
 
+        String sql = "SELECT count(*) FROM Pessoa p "
+                + "INNER JOIN Professor prof On (p.id_pessoa = prof.id_professor) ";
+
+        PreparedStatement st = c.prepareStatement(sql);
+
+        ResultSet rs = st.executeQuery();
+        rs.next();
+
+        return rs.getInt(1);
+    }
 }

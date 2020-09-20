@@ -10,12 +10,12 @@ package br.vianna.escola.model;
  * @author ander
  */
 public class Pessoa {
-    private int id;
+    private int id_Pessoa;
     private String nome;
     private int idade;
 
     public Pessoa(int id, String nome, int idade) {
-        this.id = id;
+        this.id_Pessoa = id;
         this.nome = nome;
         this.idade = idade;
     }
@@ -24,11 +24,11 @@ public class Pessoa {
     }
     
     public int getId() {
-        return id;
+        return id_Pessoa;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.id_Pessoa = id;
     }
 
     public String getNome() {

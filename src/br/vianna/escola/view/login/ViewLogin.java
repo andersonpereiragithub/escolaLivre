@@ -126,7 +126,7 @@ try{
     Connection c = ConnectionSingleton.getConnection();
     
 }catch (NotConnectionException ex){
-    JOptionPane.showMessageDialog(null, "Faltou Drive");
+    JOptionPane.showMessageDialog(null, "Faltou Driver");
 }
     }//GEN-LAST:event_jButton1ActionPerformed
 
